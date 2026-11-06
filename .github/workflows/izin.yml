@@ -1,0 +1,14 @@
+name: izin
+on: workflow_dispatch
+permissions:
+  contents: write
+  actions: read
+jobs:
+  m:
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "IZIN-kendi: push=$(gh api repos/$GITHUB_REPOSITORY --jq '.permissions.push' 2>&1 | head -1) tam=$(gh api repos/$GITHUB_REPOSITORY --jq '.permissions|tostring' 2>&1 | head -1)"
+          echo "IZIN-hedef: push=$(gh api repos/muratbaskicioglu/agentspace-kilit-test --jq '.permissions.push' 2>&1 | head -1)"
