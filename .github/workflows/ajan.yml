@@ -1,0 +1,30 @@
+name: ajan
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  m:
+    runs-on: ubuntu-latest
+    steps:
+      - name: matris
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          dene() { local ad=$1 bek=$2; shift 2; local o rc; o=$("$@" 2>&1); rc=$?; local n=$(printf '%s' "$o" | grep -iE 'HTTP [0-9]{3}|rule|denied|not accessible|403|forbidden' | head -1 | cut -c1-100)
+            local s=$([ $rc -eq 0 ] && echo GECTI || echo REDDEDILDI); local v=$([ "$s" = "$bek" ] && echo tamam || echo BEKLENMEDIK); echo "MATRIS|$ad|$s|$v|$n"; }
+          T=muratbaskicioglu/agentspace-kilit-test; A=$GITHUB_REPOSITORY; printf x >x.bin
+          dene 'hedefi oku (herkese acik)' GECTI gh release view v1.0.0 -R $T --json tagName
+          dene 'KENDI deposuna yaz (kontrol kolu)' GECTI gh api -X POST repos/$A/git/refs -f ref=refs/tags/kol-$GITHUB_RUN_ID -f sha=$GITHUB_SHA
+          dene 'dosya sil' REDDEDILDI gh release delete-asset v1.0.0 latest.yml -R $T -y
+          dene 'kayit sil' REDDEDILDI gh release delete v1.0.0 -R $T --yes
+          dene 'kayit duzenle' REDDEDILDI gh release edit v1.0.0 -R $T --notes bozuk
+          dene 'dosya yukle' REDDEDILDI gh release upload v1.0.0 x.bin -R $T
+          dene 'yeni surum' REDDEDILDI gh release create v9.9.9 x.bin -R $T --title x --notes x
+          dene 'Latest tasi' REDDEDILDI gh release edit dev-latest -R $T --latest
+          dene 'etiket sil' REDDEDILDI gh api -X DELETE repos/$T/git/refs/tags/v1.0.0
+          dene 'duyuru yaz' REDDEDILDI gh api -X PUT repos/$T/contents/announcements.json -f message=x -f content=eA==
+          dene 'kural setini sil' REDDEDILDI gh api -X DELETE repos/$T/rulesets/$(gh api repos/$T/rulesets --jq '.[0].id' 2>/dev/null || echo 0)
+          git -c credential.helper= -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $(printf x-access-token:$GH_TOKEN | base64 -w0)" ls-remote https://github.com/$T HEAD >/dev/null
+          rm -rf r; git clone -q https://github.com/$T r; cd r
+          dene 'git push' REDDEDILDI git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $(printf x-access-token:$GH_TOKEN | base64 -w0)" push origin HEAD:refs/tags/zz-ajan
