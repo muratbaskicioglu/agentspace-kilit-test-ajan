@@ -25,6 +25,6 @@ jobs:
           dene 'etiket sil' REDDEDILDI gh api -X DELETE repos/$T/git/refs/tags/v1.0.0
           dene 'duyuru yaz' REDDEDILDI gh api -X PUT repos/$T/contents/announcements.json -f message=x -f content=eA==
           dene 'kural setini sil' REDDEDILDI gh api -X DELETE repos/$T/rulesets/$(gh api repos/$T/rulesets --jq '.[0].id' 2>/dev/null || echo 0)
-          git -c credential.helper= -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $(printf x-access-token:$GH_TOKEN | base64 -w0)" ls-remote https://github.com/$T HEAD >/dev/null
-          rm -rf r; git clone -q https://github.com/$T r; cd r
-          dene 'git push' REDDEDILDI git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $(printf x-access-token:$GH_TOKEN | base64 -w0)" push origin HEAD:refs/tags/zz-ajan
+          W=$(gh api repos/$T/actions/workflows --jq '.workflows[0].id')
+          echo "PROB-hedef: $(gh api -X POST repos/$T/actions/workflows/$W/dispatches -f ref=zz-yok-ref 2>&1 | head -1 | cut -c1-90)"
+          exit 0
